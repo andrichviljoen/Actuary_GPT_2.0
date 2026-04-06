@@ -7,23 +7,34 @@ import pandas as pd
 import chainladder as cl
 
 
+def _normalize_origin(df: pd.DataFrame) -> pd.DataFrame:
+    out = df.copy()
+    out.columns = [str(c) for c in out.columns]
+    if "origin" not in out.columns:
+        if "index" in out.columns:
+            out = out.rename(columns={"index": "origin"})
+        else:
+            out = out.rename(columns={out.columns[0]: "origin"})
+    return out
+
+
 def run_chain_ladder(triangle: cl.Triangle) -> dict[str, pd.DataFrame | float | cl.Chainladder]:
     model = cl.Chainladder().fit(triangle)
 
-    latest = triangle.latest_diagonal.to_frame(origin_as_datetime=False).reset_index()
+    latest = _normalize_origin(triangle.latest_diagonal.to_frame(origin_as_datetime=False).reset_index())
     latest.columns = ["origin", "latest"]
 
-    ultimate = model.ultimate_.to_frame(origin_as_datetime=False).reset_index()
+    ultimate = _normalize_origin(model.ultimate_.to_frame(origin_as_datetime=False).reset_index())
     ultimate.columns = ["origin", "ultimate"]
 
-    ibnr = model.ibnr_.to_frame(origin_as_datetime=False).reset_index()
+    ibnr = _normalize_origin(model.ibnr_.to_frame(origin_as_datetime=False).reset_index())
     ibnr.columns = ["origin", "ibnr"]
 
     summary = latest.merge(ultimate, on="origin").merge(ibnr, on="origin")
     total_reserve = float(summary["ibnr"].sum())
 
     ldf = model.ldf_.to_frame(origin_as_datetime=False).T.reset_index(drop=True)
-    ldf.columns = [f"{int(c)}" for c in ldf.columns]
+    ldf.columns = [str(c) for c in ldf.columns]
 
     return {
         "model": model,

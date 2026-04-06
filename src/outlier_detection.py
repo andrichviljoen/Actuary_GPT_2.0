@@ -6,9 +6,18 @@ import numpy as np
 import pandas as pd
 
 
+def _origin_key(value) -> str:
+    try:
+        if hasattr(value, "year"):
+            return str(int(value.year))
+    except Exception:
+        pass
+    return str(value)
+
+
 def compute_link_ratio_table(triangle_df: pd.DataFrame) -> pd.DataFrame:
     dev_cols = [c for c in triangle_df.columns if c != "origin"]
-    dev_cols = sorted(dev_cols)
+    dev_cols = sorted(dev_cols, key=lambda x: int(x))
     records: list[dict] = []
     for _, row in triangle_df.iterrows():
         origin = row["origin"]
@@ -46,9 +55,10 @@ def flag_outliers(link_ratio_df: pd.DataFrame, z_threshold: float = 2.0) -> pd.D
 def selected_factors(link_ratio_df: pd.DataFrame, exclusions: list[tuple[int, int | str]] | None = None) -> pd.DataFrame:
     work = link_ratio_df.copy()
     work["exclude"] = False
+    work["origin_key"] = work["origin"].apply(_origin_key)
     if exclusions:
-        ex_set = {(int(o), int(d)) for o, d in exclusions}
-        work["exclude"] = work.apply(lambda r: (int(r["origin"]), int(r["dev_from"])) in ex_set, axis=1)
+        ex_set = {(_origin_key(o), int(d)) for o, d in exclusions}
+        work["exclude"] = work.apply(lambda r: (r["origin_key"], int(r["dev_from"])) in ex_set, axis=1)
     sel = (
         work.loc[~work["exclude"]]
         .groupby("dev_from", as_index=False)["link_ratio"]

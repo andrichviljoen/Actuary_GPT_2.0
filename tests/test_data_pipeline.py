@@ -71,7 +71,7 @@ def test_selected_factors_with_exclusions():
 
     first = lr.iloc[0]
     fac_base = selected_factors(lr)
-    fac_ex = selected_factors(lr, exclusions=[(int(first["origin"]), int(first["dev_from"]))])
+    fac_ex = selected_factors(lr, exclusions=[(first["origin"], int(first["dev_from"]))])
     assert not fac_base.equals(fac_ex)
 
 

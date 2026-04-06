@@ -1,0 +1,11 @@
+streamlit>=1.35
+pandas>=2.1
+numpy>=1.26
+chainladder>=0.8.24
+plotly>=5.20
+scipy>=1.11
+statsmodels>=0.14
+openai>=1.30
+pydantic>=2.7
+pytest>=8.2
+openpyxl>=3.1

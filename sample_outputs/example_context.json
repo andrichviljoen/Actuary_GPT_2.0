@@ -1,0 +1,25 @@
+{
+  "metadata": {
+    "tool": "IBNR Reserving Tool",
+    "version": "1.0.0",
+    "scope": "Accident Year only"
+  },
+  "mapping": {
+    "accident_year": "accident_year",
+    "development": "development",
+    "value": "value"
+  },
+  "settings": {
+    "bootstrap_sims": 500,
+    "run_bootstrap": true
+  },
+  "exclusions": [],
+  "diagnostics": {
+    "calendar_summary": "0 potential calendar-year anomalies flagged (heuristic).",
+    "outlier_summary": "0 link-ratio candidates flagged."
+  },
+  "chain_ladder": {
+    "total_reserve": 0
+  },
+  "bootstrap": null
+}
